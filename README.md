@@ -1,2 +1,3 @@
 # lukasz_niestroj_monogo_recruitment_task
+
 Repository for monogo recruitment task
