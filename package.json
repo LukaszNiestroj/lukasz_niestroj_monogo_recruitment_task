@@ -4,7 +4,8 @@
   "description": "Repository for monogo recruitment task",
   "main": "index.js",
   "scripts": {
-    "format": "npx prettier --write ."
+    "format": "npx prettier --write .",
+    "eslint": "npx eslint ."
   },
   "repository": {
     "type": "git",
