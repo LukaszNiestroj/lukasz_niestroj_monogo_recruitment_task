@@ -1,0 +1,23 @@
+{
+  "name": "lukasz_niestroj_monogo_recruitment_task",
+  "version": "1.0.0",
+  "description": "Repository for monogo recruitment task",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LukaszNiestroj/lukasz_niestroj_monogo_recruitment_task.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/LukaszNiestroj/lukasz_niestroj_monogo_recruitment_task/issues"
+  },
+  "homepage": "https://github.com/LukaszNiestroj/lukasz_niestroj_monogo_recruitment_task#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^24.3.0"
+  }
+}
