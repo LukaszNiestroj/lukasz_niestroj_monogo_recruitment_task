@@ -41,7 +41,3 @@ npx playwright test tests/shop.pom.spec.ts
 ## Notes
 
 - If tests fail due to timeouts, check for UI overlays or banners that may block interactions. The tests are designed to handle these, but site changes may require selector updates.
-
----
-
-For questions or improvements, please contact the repository owner.
