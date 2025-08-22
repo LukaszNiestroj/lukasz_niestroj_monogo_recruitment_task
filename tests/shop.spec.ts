@@ -6,6 +6,8 @@ test.describe('Verify shop funcionality', () => {
     await page.goto('/');
     await page.getByRole('button', { name: 'GOT IT' }).click();
     await page.getByText('Yes, discover more').click();
+    await page.getByTestId('headerItem-0').click();
+    await page.getByTestId('CloseShopMenu').first().click();
   });
 
   test(
@@ -17,14 +19,12 @@ test.describe('Verify shop funcionality', () => {
       const productName = 'Ploom X Advanced';
       const productFullName = 'Ploom X Advanced Silver';
       const shopURL = 'https://www.ploom.co.uk/en/shop';
+      const cartCount = page.locator('[data-testid="cartIcon"] span');
       const productSelector = '[data-sku="ploom-x-advanced"]';
       const expectedProductName = 'Ploom X Advanced Silver';
 
       // Act
-      await page.getByTestId('headerItem-0').click();
       await expect(page).toHaveURL(shopURL);
-
-      await page.getByTestId('CloseShopMenu').first().click();
       await page.locator(productSelector).click();
 
       await expect(page.getByTestId('product-details')).toContainText(
@@ -41,10 +41,7 @@ test.describe('Verify shop funcionality', () => {
 
       // Assert
       await expect(page.getByText('Product added to cart')).toBeVisible();
-
-      const cartCount = page.locator('[data-testid="cartIcon"] span');
       await expect(cartCount).toHaveText('1');
-
       await expect(page.getByTestId('miniCart')).toContainText(productFullName);
 
       // Act
@@ -71,10 +68,6 @@ test.describe('Verify shop funcionality', () => {
       const cartCountSelector = '[data-testid="cartIcon"] span';
       const emptyCartMessage =
         'You have no items in your shopping cart at the moment.';
-
-      // Arrange
-      await page.getByTestId('headerItem-0').click();
-      await page.getByTestId('CloseShopMenu').first().click();
 
       // Act
       await page.locator(productSelector).click();
@@ -111,8 +104,7 @@ test.describe('Verify shop funcionality', () => {
       // Arrange
       const productSelector = '[data-sku="ploom-x-advanced"]';
 
-      await page.getByTestId('headerItem-0').click();
-      await page.getByTestId('CloseShopMenu').first().click();
+      // Act
       await page.locator(productSelector).click();
       await expect(page).toHaveURL(/ploom-x-advanced/);
 
@@ -121,6 +113,7 @@ test.describe('Verify shop funcionality', () => {
         .locator('aem-productDetails_container img')
         .all();
 
+      // Assert
       for (const link of links) {
         const url = await link.getAttribute('href');
         if (url && !url.startsWith('#')) {
