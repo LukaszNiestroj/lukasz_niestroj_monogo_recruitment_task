@@ -13,9 +13,10 @@ test.describe('End-2-End Shopping', () => {
       const shopURL = 'https://www.ploom.co.uk/en/shop';
       const productSelector = '[data-sku="ploom-x-advanced"]';
       const expectedProductName = 'Ploom X Advanced Silver';
+      const cartCount = page.locator('[data-testid="cartIcon"] span');
       const cartCountSelector = '[data-testid="cartIcon"] span';
       const emptyCartMessage =
-        'You have no items in your shopping cart at the moment.';
+      'You have no items in your shopping cart at the moment.';
 
       await page.goto('/');
       await page.getByRole('button', { name: 'GOT IT' }).click();
@@ -24,7 +25,6 @@ test.describe('End-2-End Shopping', () => {
       // Act
       await page.getByTestId('headerItem-0').click();
       await expect(page).toHaveURL(shopURL);
-
       await page.getByTestId('CloseShopMenu').first().click();
       await page.locator(productSelector).click();
 
@@ -42,10 +42,7 @@ test.describe('End-2-End Shopping', () => {
 
       // Assert
       await expect(page.getByText('Product added to cart')).toBeVisible();
-
-      const cartCount = page.locator('[data-testid="cartIcon"] span');
       await expect(cartCount).toHaveText('1');
-
       await expect(page.getByTestId('miniCart')).toContainText(productFullName);
 
       // Act
@@ -59,6 +56,8 @@ test.describe('End-2-End Shopping', () => {
       await expect(page.getByTestId('main-section')).toContainText(
         productFullName,
       );
+
+      // Act
       await page.getByRole('button', { name: 'Remove Item' }).click();
       await page.getByTestId('remove-item-submit-button').click();
 

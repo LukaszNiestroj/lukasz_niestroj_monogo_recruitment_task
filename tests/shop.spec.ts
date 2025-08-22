@@ -38,7 +38,6 @@ test.describe('Verify shop funcionality', () => {
       // Assert
       const json = await response.json();
       expect(json.data.cart.items[0].product.name).toBe(expectedProductName);
-      // await page.getByTestId('pdpAddToProduct').click();
 
       // Assert
       await expect(page.getByText('Product added to cart')).toBeVisible();
@@ -112,19 +111,16 @@ test.describe('Verify shop funcionality', () => {
       // Arrange
       const productSelector = '[data-sku="ploom-x-advanced"]';
 
-      // Go to product page
       await page.getByTestId('headerItem-0').click();
       await page.getByTestId('CloseShopMenu').first().click();
       await page.locator(productSelector).click();
       await expect(page).toHaveURL(/ploom-x-advanced/);
 
-      // Collect all links and images inside product-details container
       const links = await page.locator('aem-productDetails_container a').all();
       const images = await page
         .locator('aem-productDetails_container img')
         .all();
 
-      // Check links
       for (const link of links) {
         const url = await link.getAttribute('href');
         if (url && !url.startsWith('#')) {
@@ -135,14 +131,12 @@ test.describe('Verify shop funcionality', () => {
         }
       }
 
-      // Check images
       for (const img of images) {
         const src = await img.getAttribute('src');
         if (src) {
           const response = await request.get(src);
           expect(response.status(), `Broken image: ${src}`).toBe(200);
 
-          // dodatkowe sprawdzenie czy obraz faktycznie się załadował
           const isVisible = await img.evaluate(
             (node: HTMLImageElement) => node.complete && node.naturalWidth > 0,
           );
