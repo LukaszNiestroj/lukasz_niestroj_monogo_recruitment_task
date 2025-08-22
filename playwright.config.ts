@@ -14,8 +14,8 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
-  retries: 0,
-  workers: undefined,
+  retries: 1,
+  workers: 1,
   reporter: 'html',
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */

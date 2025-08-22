@@ -3,11 +3,14 @@ import { waitForCartUpdateResponse } from './helpers/api.helpers';
 
 test.describe('Verify shop funcionality', () => {
   test.beforeEach(async ({ page }) => {
+    const closeShopMenu = page
+      .locator('li.navigation__item--active')
+      .getByTestId('CloseShopMenu');
     await page.goto('/');
     await page.getByRole('button', { name: 'GOT IT' }).click();
     await page.getByText('Yes, discover more').click();
     await page.getByTestId('headerItem-0').click();
-    await page.getByTestId('CloseShopMenu').first().click();
+    await closeShopMenu.click();
   });
 
   test(
@@ -93,7 +96,7 @@ test.describe('Verify shop funcionality', () => {
       await expect(page.getByTestId('emptyCartContainer').nth(1)).toHaveText(
         emptyCartMessage,
       );
-      expect(await page.locator(cartCountSelector).count()).toBe(0);
+      await expect(page.locator(cartCountSelector)).toHaveCount(0);
     },
   );
 
