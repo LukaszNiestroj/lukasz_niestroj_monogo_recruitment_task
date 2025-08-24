@@ -1,22 +1,22 @@
 import { test, expect } from '@playwright/test';
-import { waitForCartUpdateResponse } from './helpers/api.helpers';
+import { waitForCartUpdateResponse } from '../helpers/api.helpers';
 
 test.describe('End-2-End Shopping', () => {
   test(
-    'Verify if it is possible to add a product to the cart.',
+    'Cart functionality add and removed product.',
     { tag: ['@task_1', '@ui'] },
     async ({ page }) => {
-      test.setTimeout(120_000);
       // Arrange
       const productName = 'Ploom X Advanced';
       const productFullName = 'Ploom X Advanced Silver';
       const shopURL = 'https://www.ploom.co.uk/en/shop';
       const productSelector = '[data-sku="ploom-x-advanced"]';
-      const expectedProductName = 'Ploom X Advanced Silver';
       const cartCount = page.locator('[data-testid="cartIcon"] span');
       const cartCountSelector = '[data-testid="cartIcon"] span';
+      const loaderSelector = '[class*="Loading-module-active"]';
+      const cartListSelector = '[data-testid="regular-cart-list"]';
       const emptyCartMessage =
-      'You have no items in your shopping cart at the moment.';
+        'You have no items in your shopping cart at the moment.';
 
       await page.goto('/');
       await page.getByRole('button', { name: 'GOT IT' }).click();
@@ -38,7 +38,7 @@ test.describe('End-2-End Shopping', () => {
 
       // Assert
       const json = await response.json();
-      expect(json.data.cart.items[0].product.name).toBe(expectedProductName);
+      expect(json.data.cart.items[0].product.name).toBe(productFullName);
 
       // Assert
       await expect(page.getByText('Product added to cart')).toBeVisible();
@@ -49,10 +49,11 @@ test.describe('End-2-End Shopping', () => {
       await page.getByTestId('miniCartCheckoutButton').click();
 
       // Assert
+      await page.addStyleTag({
+        content: `${loaderSelector} { display: none !important; }`,
+      });
       await expect(page).toHaveURL(/cart-n-checkout/);
-      await page
-        .getByTestId('main-section')
-        .waitFor({ state: 'visible', timeout: 120_000 });
+      await page.waitForSelector(cartListSelector);
       await expect(page.getByTestId('main-section')).toContainText(
         productFullName,
       );

@@ -1,11 +1,18 @@
 import { Page, Locator, expect, APIRequestContext } from '@playwright/test';
 
-export class ShopPage {
-  readonly page: Page;
-  readonly cartCount: Locator;
-  readonly miniCart: Locator;
-  readonly miniCartCheckoutButton: Locator;
-  readonly closeShopMenu: Locator;
+export class ShopEnPage {
+  page: Page;
+  cartCount: Locator;
+  miniCart: Locator;
+  miniCartCheckoutButton: Locator;
+  closeShopMenu: Locator;
+  cartListSelector: Locator;
+  loaderSelector: string;
+  removeButton: Locator;
+  cartMainSection: Locator;
+  emptyCartLocator: Locator;
+  productDetails: Locator;
+  addedToCartPopup: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -15,6 +22,13 @@ export class ShopPage {
     this.closeShopMenu = page
       .locator('li.navigation__item--active')
       .getByTestId('CloseShopMenu');
+    this.cartListSelector = page.locator('[data-testid="regular-cart-list"]');
+    this.loaderSelector = '[class*="Loading-module-active"]';
+    this.removeButton = page.getByRole('button', { name: 'Remove Item' });
+    this.cartMainSection = page.getByTestId('main-section');
+    this.emptyCartLocator = page.getByTestId('emptyCartContainer').nth(1);
+    this.productDetails = page.getByTestId('product-details');
+    this.addedToCartPopup = page.getByText('Product added to cart').last();
   }
 
   async navigate() {
@@ -31,41 +45,34 @@ export class ShopPage {
   }
 
   async removeProductFromCart() {
-    await this.page.getByRole('button', { name: 'Remove Item' }).click();
+    await expect(this.removeButton).toBeVisible();
+    await this.removeButton.click();
     await this.page.getByTestId('remove-item-submit-button').click();
   }
 
   async goToCheckout() {
     await this.miniCartCheckoutButton.click();
+    await this.page.addStyleTag({
+      content: `${this.loaderSelector} { display: none !important; }`,
+    });
     await expect(this.page).toHaveURL(/cart-n-checkout/);
-    await this.page
-      .getByTestId('main-section')
-      .waitFor({ state: 'visible', timeout: 120_000 });
   }
 
   async verifyProductInCart(productFullName: string) {
-    await expect(this.page.getByTestId('main-section')).toContainText(
-      productFullName,
-    );
+    await expect(this.cartMainSection).toContainText(productFullName);
   }
 
   async verifyEmptyCart(emptyCartMessage: string) {
-    await expect(this.page.getByTestId('emptyCartContainer').nth(1)).toHaveText(
-      emptyCartMessage,
-    );
+    await expect(this.emptyCartLocator).toHaveText(emptyCartMessage);
     await expect(this.cartCount).toHaveCount(0);
   }
 
   async verifyProductDetails(productName: string) {
-    await expect(this.page.getByTestId('product-details')).toContainText(
-      productName,
-    );
+    await expect(this.productDetails).toContainText(productName);
   }
 
   async verifyProductAddedToCart(productFullName: string) {
-    await expect(
-      this.page.getByText('Product added to cart').last(),
-    ).toBeVisible();
+    await expect(this.addedToCartPopup).toBeVisible();
     await expect(this.cartCount).toHaveText('1');
     await expect(this.miniCart).toContainText(productFullName);
   }

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { waitForCartUpdateResponse } from './helpers/api.helpers';
+import { waitForCartUpdateResponse } from '../helpers/api.helpers';
 
-test.describe('Verify shop funcionality', () => {
+test.describe('Verify shop functionality', () => {
   test.beforeEach(async ({ page }) => {
     const closeShopMenu = page
       .locator('li.navigation__item--active')
@@ -15,24 +15,26 @@ test.describe('Verify shop funcionality', () => {
 
   test(
     'Verify if it is possible to add a product to the cart.',
-    { tag: ['@task_1', '@ui'] },
+    { tag: ['@en', '@task_1', '@ui'] },
     async ({ page }) => {
-      test.setTimeout(120_000);
       // Arrange
       const productName = 'Ploom X Advanced';
       const productFullName = 'Ploom X Advanced Silver';
       const shopURL = 'https://www.ploom.co.uk/en/shop';
+      const addedToCartPopup = page.getByText('Product added to cart');
       const cartCount = page.locator('[data-testid="cartIcon"] span');
+      const miniCartIcon = page.getByTestId('miniCart');
+      const cartListSelector = '[data-testid="regular-cart-list"]';
+      const productDetails = page.getByTestId('product-details');
       const productSelector = '[data-sku="ploom-x-advanced"]';
-      const expectedProductName = 'Ploom X Advanced Silver';
+      const loaderSelector = '[class*="Loading-module-active"]';
+      const cartMainSection = page.getByTestId('main-section');
 
       // Act
       await expect(page).toHaveURL(shopURL);
       await page.locator(productSelector).click();
 
-      await expect(page.getByTestId('product-details')).toContainText(
-        productName,
-      );
+      await expect(productDetails).toContainText(productName);
       const [response] = await Promise.all([
         page.waitForResponse(waitForCartUpdateResponse),
         page.getByTestId('pdpAddToProduct').click(),
@@ -40,24 +42,23 @@ test.describe('Verify shop funcionality', () => {
 
       // Assert
       const json = await response.json();
-      expect(json.data.cart.items[0].product.name).toBe(expectedProductName);
+      expect(json.data.cart.items[0].product.name).toBe(productFullName);
 
       // Assert
-      await expect(page.getByText('Product added to cart')).toBeVisible();
+      await expect(addedToCartPopup).toBeVisible();
       await expect(cartCount).toHaveText('1');
-      await expect(page.getByTestId('miniCart')).toContainText(productFullName);
+      await expect(miniCartIcon).toContainText(productFullName);
 
       // Act
       await page.getByTestId('miniCartCheckoutButton').click();
+      await page.addStyleTag({
+        content: `${loaderSelector} { display: none !important; }`,
+      });
 
       // Assert
       await expect(page).toHaveURL(/cart-n-checkout/);
-      await page
-        .getByTestId('main-section')
-        .waitFor({ state: 'visible', timeout: 120_000 });
-      await expect(page.getByTestId('main-section')).toContainText(
-        productFullName,
-      );
+      await page.waitForSelector(cartListSelector);
+      await expect(cartMainSection).toContainText(productFullName);
     },
   );
 
@@ -65,10 +66,11 @@ test.describe('Verify shop funcionality', () => {
     'Verify if it is possible to remove a product from the cart.',
     { tag: ['@task_2', '@ui'] },
     async ({ page }) => {
-      test.setTimeout(120_000);
       // Arrange
       const productSelector = '[data-sku="ploom-x-advanced"]';
       const cartCountSelector = '[data-testid="cartIcon"] span';
+      const loaderSelector = '[class*="Loading-module-active"]';
+      const emptyCartLocator = page.getByTestId('emptyCartContainer').nth(1);
       const emptyCartMessage =
         'You have no items in your shopping cart at the moment.';
 
@@ -82,20 +84,22 @@ test.describe('Verify shop funcionality', () => {
       // Act
       await page.getByTestId('miniCartCheckoutButton').click();
 
+      await page.addStyleTag({
+        content: `${loaderSelector} { display: none !important; }`,
+      });
+
       // Assert
       await expect(page).toHaveURL(/cart-n-checkout/);
 
       // Act
-      await page
-        .getByTestId('main-section')
-        .waitFor({ state: 'visible', timeout: 120_000 });
+      await expect(
+        page.getByRole('button', { name: 'Remove Item' }),
+      ).toBeVisible();
       await page.getByRole('button', { name: 'Remove Item' }).click();
       await page.getByTestId('remove-item-submit-button').click();
 
       // Assert
-      await expect(page.getByTestId('emptyCartContainer').nth(1)).toHaveText(
-        emptyCartMessage,
-      );
+      await expect(emptyCartLocator).toHaveText(emptyCartMessage);
       await expect(page.locator(cartCountSelector)).toHaveCount(0);
     },
   );
