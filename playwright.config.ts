@@ -1,28 +1,24 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
-
-/**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
+  timeout: 120_000,
+  expect: {
+    timeout: 60_000,
+  },
   retries: 1,
-  workers: 1,
+  workers: 6,
   reporter: 'html',
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'https://www.ploom.co.uk/en',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure',
   },
 
   /* Configure projects for major browsers */
@@ -33,14 +29,32 @@ export default defineConfig({
     },
 
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      name: 'ploom_EN',
+      testDir: './tests/ploom_EN',
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: 'https://www.ploom.co.uk/en',
+      },
     },
 
     {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      name: 'ploom_PL',
+      testDir: './tests/ploom_PL',
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: 'https://www.ploom.pl/pl',
+      },
     },
+
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
+
+    // {
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'] },
+    // },
 
     /* Test against mobile viewports. */
     // {

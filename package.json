@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "format": "npx prettier --write .",
-    "eslint": "npx eslint ."
+    "eslint": "npx eslint .",
+    "test:ploom_en": "npx playwright test --project=ploom_en",
+    "test:ploom_pl": "npx playwright test --project=ploom_pl"
   },
   "repository": {
     "type": "git",
