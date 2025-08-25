@@ -27,7 +27,6 @@ Run test:
 
 ```
 - project_PL: npm run test:ploom_pl
-
 ```
 
 ## Project Overview
