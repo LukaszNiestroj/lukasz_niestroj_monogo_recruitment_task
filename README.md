@@ -27,6 +27,8 @@ Run test:
 
 - project_PL: npm run test:ploom_pl
 
+```
+
 ## Project Overview
 
 This project contains a suite of end-to-end (E2E) and UI tests for the Ploom website, written using the Playwright framework. The goal of this project is to demonstrate skills in test automation, including handling complex UI interactions and applying common design patterns.
@@ -60,3 +62,4 @@ Contains UI tests for shop functionality. The timeout in `playwright.config.ts` 
 
 - **Goal**: Verify the complete user journey.
 - **Implementation**: The e2e_ploomEnShop.spec.ts and e2e_ploomPlShop.spec.ts test simulates a realistic scenario—from entering the site and navigating, to adding a product to the cart and subsequently removing it. This ensures the integrity of the shop's key functionalities.
+```
